@@ -148,7 +148,6 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
   }
   let ob: Observer | void
   // 判断是不是已经被监听过了
-  <font color=red>redddddddddddddddddddd</font>
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
