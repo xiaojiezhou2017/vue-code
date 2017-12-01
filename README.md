@@ -300,3 +300,58 @@ function dependArray (value: Array<any>) {
 }
 
 ```
+#### dep.js
+
+```
+export default class Dep {
+  static target: ?Watcher;
+  id: number;
+  subs: Array<Watcher>;
+
+  constructor () {
+    this.id = uid++
+    this.subs = []
+  }
+  
+  // 把watcher添加到依赖列表
+  addSub (sub: Watcher) {
+    this.subs.push(sub)
+  }
+
+  removeSub (sub: Watcher) {
+    remove(this.subs, sub)
+  }
+
+　// 把wathcer添加到 this.subs 并且把在watcher里面把保存依赖
+  depend () {
+    if (Dep.target) {
+      Dep.target.addDep(this)
+    }
+  }
+  // 当监测的变量发生变化时,会调用这个方法, 去通知所有依赖这个变量的
+  // watcher
+  notify () {
+    // stabilize the subscriber list first
+    const subs = this.subs.slice()
+    for (let i = 0, l = subs.length; i < l; i++) {
+      subs[i].update()
+    }
+  }
+}
+
+// 为所有的watcher建立了一个堆栈
+Dep.target = null
+// watcher堆栈
+const targetStack = []
+
+export function pushTarget (_target: Watcher) {
+  if (Dep.target) targetStack.push(Dep.target)
+  // 指向栈顶
+  Dep.target = _target
+}
+
+export function popTarget () {
+  Dep.target = targetStack.pop()
+}
+
+```
