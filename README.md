@@ -1,6 +1,14 @@
 # vue-code
+<<<<<<< HEAD
 ## vue源码分析
 ### vue源码目录结构(src目录下的文件)
+=======
+vue源码分析
+
+> vue源码目录结构(src目录下的文件)
+
+阅读源码没有太长时间,还没有把所有文件全看一遍, 只是把自己觉得重要的文件做上了注释
+>>>>>>> b2a105971f1b22a8f8371e82ba1e1086fbb981f4
 ```
 compiler
 │   ├── codegen    
@@ -35,14 +43,6 @@ compiler
 │   │   └── watcher.js           //双向绑定中的订阅者
 │   ├── util
 │   └── vdom
-│       ├── create-component.js        
-│       ├── create-element.js
-│       ├── create-functional-component.js
-│       ├── helpers
-│       ├── modules
-│       │   ├── directives.js           
-│       │   ├── index.js
-│       │   └── ref.js
 │       ├── patch.js             // 触发视图更新的时候, 进行dom diff, 这里包含了虚拟dom diff的算法  
 │       └── vnode.js             // 虚拟dom类的定义, 在这里可以看到所有虚拟dom的属性 
 ├── platforms                    // 平台层用来和虚拟dom对接
