@@ -105,11 +105,8 @@ export const arrayMethods = Object.create(arrayProto)
     return result
   })
 })
-
-
-
-#### 设置setter和getter(代码位于src/observer/index.js)  
 ```
+#### 设置setter和getter(代码位于src/observer/index.js)  
 #### index.js
 ```
 import Dep from './dep'
