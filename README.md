@@ -1,7 +1,6 @@
 # vue-code
-vue源码分析
-
-> vue源码目录结构(src目录下的文件)
+## vue源码分析
+### vue源码目录结构(src目录下的文件)
 ```
 compiler
 │   ├── codegen    
@@ -60,29 +59,20 @@ compiler
     └── util.js
 ```
 
-> observer模块代码分析
+### vue双向绑定实现(主要代码位于src/observer) 
+> 实现主要分为三部分
+* 重写数组的部分方法, 使数组的一些操作可以通知订阅者, 触发视图更新
+* 通过Object.defineproperty设置对象的setter来拦截修改操作, 通过getter来通知订阅者,触发视图更新
+* 订阅者和发布者的实现
 
+#### 重写数组方法 代码位于 src/observer/array.js
 ```
-├── array.js         // 重写数组的方法,使push, pop, shift, unshift, splice, sort, reserver能够触发视图更新,或者说通知watcher
-├── dep.js           // 建立变量的依赖,用来记录依赖这个变量的watcher
-├── index.js         // 通过Object的setter和geeter建立拦截
-├── scheduler.js     
-├── traverse.js
-└── watcher.js      // 实现watcher的主要代码
-```
-#### array.js
-
-```
-// vue重写了数组的一部分方法, 使它们的调用能通知watcher更新,在index.js里面这个
-// 导出的对象将会作为数组数据的原型
-
 // 取数组原型
 const arrayProto = Array.prototype 
 // 创建一个空对象,且原型指向数组的原型
 export const arrayMethods = Object.create(arrayProto)
-
 /**
- * 这里扩展或者说是重写了一部分数组的方法
+ * 下面制定了要扩展的数组方法,也就是你可以使用这些方法操作数组的时候, 可以触发视图更新 
  */
 ;[
   'push',
@@ -96,7 +86,7 @@ export const arrayMethods = Object.create(arrayProto)
 .forEach(function (method) {
   // 把数组的原生方法取出来
   const original = arrayProto[method]
-  // 定义arrayMethods的方法,def调用的是Obeject.defineProperty方法
+  // 在这里重新定义了数组的方法, 并且可以通知订阅者 
   def(arrayMethods, method, function mutator (...args) {
     // 调用数组的原生方法处理数据
     const result = original.apply(this, args)
@@ -114,13 +104,16 @@ export const arrayMethods = Object.create(arrayProto)
     }
     // 操作完成之后,需要对新的数据进行监听
     if (inserted) ob.observeArray(inserted)
-    // 通知依赖此数组的watcher
+    // 重点: 通知依赖此数组的watcher
     ob.dep.notify()
     // 把处理的结果返回
     return result
   })
 })
 
+
+
+#### 设置setter和getter(代码位于src/observer/index.js)  
 ```
 #### index.js
 ```
@@ -347,6 +340,7 @@ export function del (target: Array<any> | Object, key: any) {
 /**
  * Collect dependencies on array elements when the array is touched, since
  * we cannot intercept array element access like property getters.
+ * 这里主要是处理数组的依赖
  */
 function dependArray (value: Array<any>) {
   for (let e, i = 0, l = value.length; i < l; i++) {
