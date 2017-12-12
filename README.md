@@ -344,7 +344,7 @@ function dependArray (value: Array<any>) {
 }
 
 ```
-#### dep.js
+#### 发布者实现(代码位于observer/dep.js)
 
 ```
 export default class Dep {
@@ -361,8 +361,8 @@ export default class Dep {
   addSub (sub: Watcher) {
     this.subs.push(sub)
   }
-
-  removeSub (sub: Watcher) {
+  // 清除指定依赖
+  removeSub (sub: Watcher) {
     remove(this.subs, sub)
   }
 
@@ -372,9 +372,9 @@ export default class Dep {
       Dep.target.addDep(this)
     }
   }
-  // 当监测的变量发生变化时,会调用这个方法, 去通知所有依赖这个变量的
-  // watcher
-  notify () {
+  //重点: 当监测的变量发生变化时,会调用这个方法,去通知所有的订阅者, 在seeter里面,当监测的变量发生变化时, 会调用这个方法, 在重写数组的
+  // 一些方法的时候, 也是调用了这个方法了来通知订阅者
+  notify () {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
     for (let i = 0, l = subs.length; i < l; i++) {
@@ -383,14 +383,13 @@ export default class Dep {
   }
 }
 
-// 为所有的watcher建立了一个堆栈
+// 为所有的watcher建立了一个堆栈, 用于收集依赖
 Dep.target = null
 // watcher堆栈
 const targetStack = []
 
 export function pushTarget (_target: Watcher) {
   if (Dep.target) targetStack.push(Dep.target)
-  // 指向栈顶
   Dep.target = _target
 }
 
