@@ -107,7 +107,6 @@ export const arrayMethods = Object.create(arrayProto)
 })
 ```
 #### 设置setter和getter(代码位于src/observer/index.js)  
-#### index.js
 ```
 import Dep from './dep'
 import VNode from '../vdom/vnode'
