@@ -5,7 +5,7 @@
 * vdom的diff方法(主要体现在更新子节点的时候,对应的源码位置vdom/patch.js下面的updateChildren方法)
 
 #### vdom的结构(src/core/vnode.js)
-> 下面的写法是typescript的写, 可以
+> 下面的写法是typescript的写, 后面标注有类型   
 ```
   tag: string | void;                                    // 标签名称
   data: VNodeData | void;                                // data表示vnode的节点信息, 具体可以参考 /types/vnode.d.t
