@@ -44,4 +44,5 @@
 </script>
 </html>
 ```
-![image]()
+> 分析如下图
+![image](https://github.com/xiaojiezhou2017/vue-code/blob/master/new%20Vue.png)
