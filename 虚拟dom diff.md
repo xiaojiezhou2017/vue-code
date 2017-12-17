@@ -35,3 +35,5 @@
   fnScopeId: ?string; // func
 ```
 
+#### patch分析(src/core/vdom/path.js)
+![image](https://github.com/xiaojiezhou2017/vue-code/blob/master/path%E6%96%B9%E6%B3%95(oldVnode%2C%20vnode%2C%20hydrating%2C%20removeOnly%2C%20parentElm%2C%20refElm).png)
