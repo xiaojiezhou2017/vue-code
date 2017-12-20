@@ -6,7 +6,21 @@ class Observer {
     walk (obj) {
         const keys = Object.keys(obj);
         for (let i = 0; i < keys.length; i ++ ) {
-            this.observer.call(this,obj,keys[i],obj[keys[i]])
+            const value = obj[keys[i]];
+            if (isObject(value)) {
+                new Observer(value);
+            } else if (isArray(value))  {
+               this.observerArray(value); 
+            } else {
+                this.observer.call(this,obj,keys[i],value)
+            }
+        }
+    }
+    observerArray (v) {
+        for (let i = 0; i < v.length; i ++) {
+            if (isObject(v[i])) {
+                new Observer(v[i]);
+            }
         }
     }
     observer (obj, key, value) {
@@ -23,6 +37,9 @@ class Observer {
         }) 
     }
 }
+
+const isObject = (v) => Object.prototype.toString.call(v) === '[object Object]';
+const isArray = (v) => Array.isArray(v);
 
 const stack = [];
 
@@ -86,13 +103,18 @@ class Watcher {
     }
 }
 
-const obj = {name: 'zhou'};
+const obj = {name: 'zhou', schools:{ name:'清华' }, arr: ['111', { company:'华为' }] };
 function mount () {
    const input = document.getElementById('input');
    const text = document.getElementById('text');
+   const text1 = document.getElementById('text1');
+   const text2 = document.getElementById('text2');
    const render = () => { 
+        console.log('render');
         input.value = obj.name;
         text.innerText = obj.name; 
+        text1.innerText = obj.schools.name; 
+        text2.innerText = obj.arr[1].company; 
    }
    const watcher = new Watcher(render);
    new Observer(obj);   
