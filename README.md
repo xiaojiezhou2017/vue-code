@@ -23,12 +23,12 @@ vue源码学习
 │   │   ├── observer
 │   │   ├── util
 │   │   └── vdom
-│   ├── platforms          // 对不同平台的实现，不同平台包括web/server/weex
+│   ├── platforms                                // 对不同平台的实现，不同平台包括web/server/weex
 │   │   ├── web
-│   │   │   ├── compiler   // web平台编译模版的实现
-│   │   │   ├── runtime    // 对应与web平台运行时实现，运行时不包含模版编译，这个在vue文档中有描述
-        ├── entry-compiler.js    // 打包packages/vue-template-compiler的入口
-        ├── entry-runtime-with-compiler.js  // 打包完整版的入口
-        ├── entry-runtime.js                // 只包含运行时版打包入口文件
+│   │   │   ├── compiler                         // web平台编译模版的实现
+│   │   │   ├── runtime                          // 对应与web平台运行时实现，运行时不包含模版编译，这个在vue文档中有描述
+            ├── entry-compiler.js                // 打包packages/vue-template-compiler的入口
+            ├── entry-runtime-with-compiler.js   // 打包完整版的入口
+             ├── entry-runtime.js                // 只包含运行时版打包入口文件
 
 ```
