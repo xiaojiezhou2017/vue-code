@@ -8,7 +8,7 @@ vue源码学习
 ├── dist                   // 打包后文件放置的目录
 ├── examples               // 例子展示
 ├── flow                   // 使用flow，定义了静态类型。在这里能看到vue文档上面提供的api，或者文档上没有提及的api
-├── packages               // 独立拆分的功能包，方便复用，其中就包含了vue把template编译成render的函数  
+├── packages               // 独立拆分的功能包，方便复用，其中就包含了vue把template编译成render的函数  
 │   ├── vue-server-renderer
 │   ├── vue-template-compiler
 │   ├── weex-template-compiler
