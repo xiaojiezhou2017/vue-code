@@ -95,7 +95,7 @@
 │   │   ├── ssr-stream.spec.js
 │   │   ├── ssr-string.spec.js
 │   │   └── ssr-template.spec.js
-│   ├── unit                            单元测试
+│   ├── unit                            单元测试，这里要注意的是*.spec.js表示的是测试条件代码
 │   │   ├── .eslintrc.json
 │   │   ├── features
 │   │   │   ├── component
@@ -129,4 +129,183 @@
 │   ├── vnode.d.ts
 │   └── vue.d.ts
 ```
+## package.json解析
+```json
+{
+  "name": "vue", 
+  "version": "2.6.10",
+  "description": "Reactive, component-oriented view layer for modern web interfaces.",
+  "main": "dist/vue.runtime.common.js",
+  "module": "dist/vue.runtime.esm.js",
+  "unpkg": "dist/vue.js",
+  "jsdelivr": "dist/vue.js",
+  "typings": "types/index.d.ts",
+  "files": [
+    "src",
+    "dist/*.js",
+    "types/*.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "dev": "rollup -w -c scripts/config.js --environment TARGET:web-full-dev",
+    "dev:cjs": "rollup -w -c scripts/config.js --environment TARGET:web-runtime-cjs-dev",
+    "dev:esm": "rollup -w -c scripts/config.js --environment TARGET:web-runtime-esm",
+    "dev:test": "karma start test/unit/karma.dev.config.js",
+    "dev:ssr": "rollup -w -c scripts/config.js --environment TARGET:web-server-renderer",
+    "dev:compiler": "rollup -w -c scripts/config.js --environment TARGET:web-compiler ",
+    "dev:weex": "rollup -w -c scripts/config.js --environment TARGET:weex-framework",
+    "dev:weex:factory": "rollup -w -c scripts/config.js --environment TARGET:weex-factory",
+    "dev:weex:compiler": "rollup -w -c scripts/config.js --environment TARGET:weex-compiler ",
+    "build": "node scripts/build.js",
+    "build:ssr": "npm run build -- web-runtime-cjs,web-server-renderer",
+    "build:weex": "npm run build -- weex",
+    "test": "npm run lint && flow check && npm run test:types && npm run test:cover && npm run test:e2e -- --env phantomjs && npm run test:ssr && npm run test:weex",
+    "test:unit": "karma start test/unit/karma.unit.config.js",
+    "test:cover": "karma start test/unit/karma.cover.config.js",
+    "test:e2e": "npm run build -- web-full-prod,web-server-basic-renderer && node test/e2e/runner.js",
+    "test:weex": "npm run build:weex && jasmine JASMINE_CONFIG_PATH=test/weex/jasmine.js",
+    "test:ssr": "npm run build:ssr && jasmine JASMINE_CONFIG_PATH=test/ssr/jasmine.js",
+    "test:sauce": "npm run sauce -- 0 && npm run sauce -- 1 && npm run sauce -- 2",
+    "test:types": "tsc -p ./types/test/tsconfig.json",
+    "lint": "eslint src scripts test",
+    "flow": "flow check",
+    "sauce": "karma start test/unit/karma.sauce.config.js",
+    "bench:ssr": "npm run build:ssr && node benchmarks/ssr/renderToString.js && node benchmarks/ssr/renderToStream.js",
+    "release": "bash scripts/release.sh",
+    "release:weex": "bash scripts/release-weex.sh",
+    "release:note": "node scripts/gen-release-note.js",
+    "commit": "git-cz"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged",
+    "commit-msg": "node scripts/verify-commit-msg.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/vue.git"
+  },
+  "keywords": [
+    "vue"
+  ],
+  "author": "Evan You",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vuejs/vue/issues"
+  },
+  "homepage": "https://github.com/vuejs/vue#readme",
+  "devDependencies": {},
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
 
+```
+ `name`: 项目名称 vue  
+ `version`: 项目的版本 2.6.10  
+ `description`: 项目的描述  
+ `files`: 表示该npm包应该包含的文件， 也就是npm publish发布上去的文件。 例如通过npm install的Vue，文件目录为：
+  src/ dist/ types/
+  > 官方文档上的说明如下：
+  The "files" field is an array of files to include in your project. If you name a folder in the array, then it will also include the files inside that folder. (Unless they would be ignored by another rule.)  
+  
+ `main`: main项目的主要入口，指向的是一个导出的模块，当用户使用require('moduleID'), 返回的应该是该main字段指定的模块  
+ `module`: 该字段目前不属于package.json的规范,所以从npm的官方文档是查不到的。 module是表示使用ES module规范的入口，也就是es5包规范的入口。main 表示的是使用common.js规范的入口。当使用require('module')，会从模块的main字段中读取入口文件并导出。当使用
+ es模块规范的时候，会从module字段读取入口文件并导出。webpack从2版本开始支持，也就是这个字段是给打包工具用的
+ [module字段参考网址](https://segmentfault.com/a/1190000014286439) [package.json 非官方字段集合](https://segmentfault.com/a/1190000016365409)  
+ `unpkg`: 在unpkg根据url寻找文件的时候，如果只指向了一个基础的url,例如unpkg.com/jquery, 将会读取unpkg字段寻找入口文件，如果失败的话，退回到main字段  
+ `jsdelivr`: 是npm的一个分发CDN，配置分发的内容，默认读取的是package.json中的jsdelivr，没有的话，会读取browser和main  
+ `typings`: 定义typescript的入口文件。  
+ `sideEffects`: webpack打包进行tree-sharking的时候会用到。表示该模块不含有任何的副作用，在tree-sharking的时候可以优化掉。什么是副作用：例如
+  `console.log('hello world'')`这段代码就有副作用，例如
+  ```
+  // module b
+  export function b () { };
+  console.log('module b');  // 副作用代码
+  // module a
+  export function a () {}
+  // app.js
+  import a from 'a'
+  import b from 'b'
+  a();
+  ```
+  此时tree-sharking是无法优化掉b的代码的，即使b模块只是导入并没有使用，因为b模块中有副作用代码
+  [详细内容可以参考](https://segmentfault.com/a/1190000015689240)   
+  `gitHooks`:结合尤大大的yorkie根据[husky](https://github.com/typicode/husky)改写的模块，可以根据package.json中的配置文件，自动安装gitHooks。
+  `lint-staged`:[lint-staged](https://github.com/okonet/lint-staged)模块需要读取的配置,用来对git暂存的文件执行命令，git暂存的文件是指git add没有git commit的文件。在gitHooks中配置了pre-commit钩子执行的命令是lint-staged。lint-staged会读取package.json中该项的配置，
+  也就是执行`eslint --fix git add`, 在每次commit之前对代码风格进行修复。  
+  `config`:[commitizen](https://github.com/commitizen/cz-cli)用来规范git提交记录。可以选用不同的格式，其中config中的path就对应了配置的交互界面的路径。
+  `cz-conventional-changelog`是angular.js使用的格式。
+  
+  ### package.json中script中运行的命令：
+  * dev 调试开发运行时加编译时的代码， 其中的`TARGET`环境变量用来表示当前所要打包的文件类型。在src/scripts/config中的中用来取对应的入口文件
+  ```javascript
+  if (process.env.TARGET) {
+    module.exports = genConfig(process.env.TARGET)
+  } else {
+    exports.getBuild = genConfig
+    exports.getAllBuilds = () => Object.keys(builds).map(genConfig)
+  }
+  ```
+  * dev:cjs 调试开发打包后是commonjs规范
+  * dev:esm 调试开发打包后是es6模块规范
+  * dev:test 在当前的开发环境（指chrome）运行单元测试
+  * dev:ssr 调试开发服务端渲染
+  * dev:compiler 调试开发commonjs规范的，vue-template-compiler包
+  * dev:weex
+  * dev:weex:factory
+  * dev:weex:compiler
+  * build 打包出服务端渲染和浏览器端代码，不包含weex平台。 
+    dist/vue.runtime.common.dev.js 217.71kb  
+    dist/vue.runtime.common.prod.js 63.20kb (gzipped: 22.83kb)  
+    dist/vue.common.dev.js 312.02kb  
+    dist/vue.common.prod.js 91.30kb (gzipped: 33.23kb)  
+    dist/vue.runtime.esm.js 221.72kb  
+    dist/vue.esm.js 317.96kb  
+    dist/vue.esm.browser.js 307.36kb  
+    dist/vue.esm.browser.min.js 90.79kb (gzipped: 33.22kb)  
+    dist/vue.runtime.js 232.78kb  
+    dist/vue.runtime.min.js 63.36kb (gzipped: 22.89kb)  
+    dist/vue.js 333.34kb  
+    dist/vue.min.js 91.46kb (gzipped: 33.29kb)  
+    packages/vue-template-compiler/build.js 140.31kb  
+    packages/vue-template-compiler/browser.js 247.68kb  
+    packages/vue-server-renderer/build.dev.js 247.05kb  
+    packages/vue-server-renderer/build.prod.js 80.18kb (gzipped: 29.27kb)  
+    packages/vue-server-renderer/basic.js 333.88kb  
+    packages/vue-server-renderer/server-plugin.js 2.91kb  
+    packages/vue-server-renderer/client-plugin.js 3.03kb  
+  * build:ssr 打包出服务端渲染的代码
+    dist/vue.runtime.common.dev.js 217.71kb  
+    dist/vue.runtime.common.prod.js 63.20kb (gzipped: 22.83kb)  
+    packages/vue-server-renderer/build.dev.js 247.05kb  
+    packages/vue-server-renderer/build.prod.js 80.18kb (gzipped: 29.27kb)  
+    packages/vue-server-renderer/basic.js 333.88kb  
+    packages/vue-server-renderer/server-plugin.js 2.91kb  
+    packages/vue-server-renderer/client-plugin.js 3.03kb  
+  * build:weex 打包出weex平台的代码
+    packages/weex-vue-framework/factory.js 203.90kb  
+    packages/weex-vue-framework/index.js 5.68kb  
+    packages/weex-template-compiler/build.js 127.37kb  
+  * test:unit 运行单元测试，包括了三个环境['Chrome', 'Firefox', 'Safari']
+  * test:cover 运行单元测试，并在终端输出测试结果和覆盖率
+  * test:e2e 运行界面测试，可以直接看到网页的交互行为。
+  * test:sauce 在sauceLabs云测试平台运行vue的单元测试。使用的是['karma-sauce-launcher'](https://www.npmjs.com/package/karma-sauce-launcher)插件
+  * test:types 测试typescript类型
+  * lint 使用eslint检查测试文件, 包括src scripts test下的文件
+  * flow 做flow的类型检查，并且在终端打印出结果
+  * sauce 供test:sauce调用
+  * bench:ssr 运行服务端渲染的基准测试或者说是性能测试，测试的是渲染1000行10列的表格
+  
+  ### 目前不了解或者需要深入学习的知识点
+ * typescript 类型测试
+ * vue源码是如何集成typescript的
+  
+ 
