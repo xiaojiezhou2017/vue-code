@@ -303,9 +303,15 @@
   * flow 做flow的类型检查，并且在终端打印出结果
   * sauce 供test:sauce调用
   * bench:ssr 运行服务端渲染的基准测试或者说是性能测试，测试的是渲染1000行10列的表格
+  * release 发版脚本。 主要做了下面几件事情 1 让用户输入版本号 2 运行发版前的步骤，主要包括（lint代码风格检查，flow 静态类型检查, test:cover单元测试, test:e2e可视化测试， test:ssr服务端渲染测试）3 运行build的命令 4 切到 packages/vue-template-compiler目录下和packages/vue-server-renderer下，执行npm publish命令发布vue-template-compiler和vue-server-renderer包 5 将生成的dist下的内容和packages下的内容添加到git版本中 5 生成发版记录也就是release note 6 把分支推送到远程 7 vue发布到npm上
+  * commit 运行git提交命令
   
   ### 目前不了解或者需要深入学习的知识点
  * typescript 类型测试
  * vue源码是如何集成typescript的
-  
- 
+ * karma单元测试 
+ * e2e 测试
+ * jasmine测试工具
+ * typescipt
+ * flow
+ * rollup打包工具的使用
