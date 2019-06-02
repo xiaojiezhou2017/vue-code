@@ -1,11 +1,11 @@
-# v-model指令实现，代码位于/src/platforms/web/runtime/directives/model.js
+
 
 ### 该模块实现的就是我们常用的v-model指令，vue用来实现双向绑定。
 
 该指令主要分为inserted和componentUpdated, 其中主要区分了select select.multiple和其他文本类型框
 
 #### inserte部分
-```
+``` javascript
 inserted (el, binding, vnode, oldVnode) {
     if (vnode.tag === 'select') {
       // #6903
