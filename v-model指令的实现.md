@@ -1,10 +1,8 @@
+# v-model指令的实现
 
+该模块实现的就是我们常用的v-model指令，vue用来实现双向绑定。该指令主要分为inserted和componentUpdated, 其中主要区分了select select.multiple和其他文本类型框
 
-### 该模块实现的就是我们常用的v-model指令，vue用来实现双向绑定。
-
-该指令主要分为inserted和componentUpdated, 其中主要区分了select select.multiple和其他文本类型框
-
-#### inserte部分
+## inserte部分
 ``` javascript
 inserted (el, binding, vnode, oldVnode) {
     if (vnode.tag === 'select') {
@@ -38,5 +36,5 @@ inserted (el, binding, vnode, oldVnode) {
 ```
 针对select标签和textarea和input(text,number,password,search,email,tel,url)采取了不同的处理。
 
-* select的处理逻辑
+### select的处理逻辑
 
